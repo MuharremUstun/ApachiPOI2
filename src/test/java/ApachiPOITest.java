@@ -1,5 +1,6 @@
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -8,9 +9,9 @@ import java.io.IOException;
 import java.util.Iterator;
 
 public class ApachiPOITest {
-    private final static String FILE_NAME = "src/test/resources/Books.xlsx";
+    private final static String FILE_NAME = "src/test/resources/Book2.xlsx";
 
-    @Test
+    @Test  // This will ignore the blank cells!!
     public void test1() throws IOException {
         FileInputStream excelFile = new FileInputStream(new File(FILE_NAME));
         Workbook workbook = new XSSFWorkbook(excelFile);
@@ -32,7 +33,7 @@ public class ApachiPOITest {
 
     }
 
-    @Test
+    @Test  // This will NOT ignore the blank cells!!
     public void test2() throws IOException {
         FileInputStream excelFile = new FileInputStream(new File(FILE_NAME));
         Workbook workbook = new XSSFWorkbook(excelFile);
@@ -40,8 +41,6 @@ public class ApachiPOITest {
 
         int firstRow = sheet.getFirstRowNum();
         int lastRow = sheet.getLastRowNum();
-
-//        System.out.println("-----------------");
 
         for (int i = firstRow; i <= lastRow; i++) {
             Row row = sheet.getRow(i);
@@ -54,4 +53,33 @@ public class ApachiPOITest {
         }
     }
 
+    @DataProvider (name = "excelData")
+    public Object[][] excelData() throws IOException {
+        FileInputStream excelFile = new FileInputStream(new File(FILE_NAME));
+        Workbook workbook = new XSSFWorkbook(excelFile);
+        Sheet sheet = workbook.getSheetAt(0);
+
+        int firstRow = sheet.getFirstRowNum();
+        int lastRow = sheet.getLastRowNum();
+        int rowCount = lastRow - firstRow + 1;
+
+        Row row = sheet.getRow(1);
+        int firstCell = row.getFirstCellNum();
+        int lastCell = row.getLastCellNum();
+        int cellCount = lastCell - firstCell;
+
+        Object[][] resultData = new Object[rowCount][cellCount];
+        for (int i = firstRow; i <= lastRow; i++) {
+            row = sheet.getRow(i);
+            for (int j = firstCell; j < lastCell; j++) {
+                resultData[i][j] = row.getCell(j).toString();
+            }
+        }
+        return resultData;
+    }
+
+    @Test (dataProvider = "excelData")
+    public void test3(String c1, String c2, String c3){
+        System.out.print(c1 + ", " + c2 + ", " + c3);
+    }
 }
