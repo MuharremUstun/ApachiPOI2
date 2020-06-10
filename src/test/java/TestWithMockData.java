@@ -38,7 +38,7 @@ public class TestWithMockData {
     }
 
     @Test(dataProvider = "excelData")
-    public void test3(String c1, String c2, String c3, String c4, String c5, String c6){
+    public void test(String c1, String c2, String c3, String c4, String c5, String c6){
         System.out.print(c1 + ", " + c2 + ", " + c3+ ", " + c4 + ", " + c5 + ", " + c6);
     }
 }
